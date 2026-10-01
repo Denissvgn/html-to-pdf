@@ -45,7 +45,7 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 converter = HTMLToPDFConverter()
 
-DEFAULT_SAMPLE_PATH = Path(__file__).resolve().parent.parent.parent / "examples" / "sample_receipt.html"
+DEFAULT_SAMPLE_PATH = BASE_DIR.parent / "examples" / "sample_receipt.html"
 REFERENCE_FILE_PATH = os.getenv("HTML_TO_PDF_SAMPLE", str(DEFAULT_SAMPLE_PATH))
 
 

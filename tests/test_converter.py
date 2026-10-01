@@ -16,9 +16,9 @@ from fastapi.testclient import TestClient
 from html_to_pdf.config import PDFOptions
 from html_to_pdf.converter import HTMLToPDFConverter, convert_file, convert_html_string, convert_url
 from html_to_pdf.cookies import extract_firefox_cookies, extract_firefox_localstorage, find_firefox_profiles
-from html_to_pdf.web.app import app
+from html_to_pdf.web.app import DEFAULT_SAMPLE_PATH, app
 
-SAMPLE_RECEIPT_PATH = Path(__file__).resolve().parent.parent / "examples" / "sample_receipt.html"
+SAMPLE_RECEIPT_PATH = DEFAULT_SAMPLE_PATH
 
 
 @pytest.fixture(scope="module")
