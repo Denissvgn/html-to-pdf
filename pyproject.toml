@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "html-to-pdf"
+version = "1.0.0"
+description = "High-fidelity HTML to PDF conversion and merging service using headless Chromium"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Denis Sivagin", url = "https://github.com/Denissvgn"}
+]
+keywords = ["pdf", "html-to-pdf", "playwright", "chromium", "fastapi", "converter", "pdf-merge"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Printing",
+    "Topic :: Text Processing :: Markup :: HTML",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "playwright>=1.40.0",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.28.0",
+    "python-multipart>=0.0.9",
+    "pydantic>=2.0.0",
+    "jinja2>=3.1.0",
+    "pypdf>=5.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Denissvgn/html-to-pdf"
+Repository = "https://github.com/Denissvgn/html-to-pdf"
+Issues = "https://github.com/Denissvgn/html-to-pdf/issues"
+
+[project.scripts]
+html-to-pdf = "html_to_pdf.cli:main"
+pdf-merge = "html_to_pdf.merger:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

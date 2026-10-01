@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Receipt</title>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --bg-gray: #f9fafb;
+            --border-color: #e5e7eb;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-gray);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .receipt-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 580px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 32px;
+            border: 1px solid var(--border-color);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+        }
+        .brand {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 600;
+            background-color: #ecfdf5;
+            color: var(--primary-dark);
+        }
+        .amount-section {
+            text-align: center;
+            padding: 20px 0 28px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .amount {
+            font-size: 38px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -1px;
+        }
+        .amount-sub {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .meta-list {
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        .meta-label { color: var(--text-muted); }
+        .meta-value { font-weight: 600; color: var(--text-main); }
+
+        /* Accordion / Collapsible Sections */
+        .collapsible-section {
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
+        }
+        .accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .accordion-content {
+            padding-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .chevron-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.2s ease;
+        }
+        .footer-action {
+            margin-top: 28px;
+            text-align: center;
+        }
+        .btn-action {
+            background-color: var(--primary);
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            width: 100%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-card">
+        <div class="header">
+            <div class="brand">ACME PAYMENTS</div>
+            <div class="status-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Transfer Completed
+            </div>
+        </div>
+
+        <div class="amount-section">
+            <div class="amount">$1,250.00 USD</div>
+            <div class="amount-sub">October 1, 2026 • 14:30 UTC</div>
+        </div>
+
+        <div class="meta-list">
+            <div class="meta-row">
+                <span class="meta-label">Transaction Reference</span>
+                <span class="meta-value">TXN-8472910482</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Payment Method</span>
+                <span class="meta-value">Visa Card ••4021</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Network Fee</span>
+                <span class="meta-value">$1.50 USD</span>
+            </div>
+        </div>
+
+        <!-- Collapsible Section 1: Recipient Details -->
+        <div class="collapsible-section">
+            <div class="accordion-header cursor-pointer" aria-expanded="false" role="button">
+                <span>Recipient's details</span>
+                <svg class="chevron-icon scale-y-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+            <div class="accordion-content">
+                <div class="meta-row">
+                    <span class="meta-label">Receiving Country</span>
+                    <span class="meta-value">Germany</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Beneficiary Name</span>
+                    <span class="meta-value">Alex Morgan</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Account IBAN</span>
+                    <span class="meta-value">DE89 3704 0044 0532 0130 00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Collapsible Section 2: Sender Details -->
+        <div class="collapsible-section">
+            <div class="accordion-header cursor-pointer" aria-expanded="false" role="button">
+                <span>Sender's details</span>
+                <svg class="chevron-icon scale-y-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+            <div class="accordion-content">
+                <div class="meta-row">
+                    <span class="meta-label">Sending Country</span>
+                    <span class="meta-value">United States</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Sender Name</span>
+                    <span class="meta-value">Jordan Taylor</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Source Account</span>
+                    <span class="meta-value">Checking ••8842</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-action">
+            <button class="btn-action">Download Tax Invoice</button>
+        </div>
+    </div>
+</body>
+</html>

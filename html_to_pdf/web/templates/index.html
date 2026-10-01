@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML to PDF Converter Studio</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>HTML <span class="accent">to</span> PDF</h1>
+                    <span class="version-tag">High Fidelity Studio</span>
+                </div>
+            </div>
+            <div class="engine-badge">
+                <span class="status-dot"></span>
+                <span>Engine: <strong>Chromium Headless</strong></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Sample reference notification if available -->
+        {% if reference_file_exists %}
+        <section class="reference-banner">
+            <div class="banner-content">
+                <div class="banner-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                </div>
+                <div class="banner-text">
+                    <strong>Reference Receipt Detected:</strong>
+                    <code>{{ reference_file_path }}</code>
+                </div>
+            </div>
+            <div class="banner-actions">
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-load-reference">
+                    Use Reference Receipt
+                </button>
+            </div>
+        </section>
+        {% endif %}
+
+        <div class="app-grid">
+            <!-- Left Panel: Input & Options -->
+            <div class="panel input-panel">
+                <div class="tabs-header" role="tablist">
+                    <button class="tab-btn active" data-tab="tab-path" role="tab">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                        Local Path
+                    </button>
+                    <button class="tab-btn" data-tab="tab-url" role="tab">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        Web URL
+                    </button>
+                    <button class="tab-btn" data-tab="tab-upload" role="tab">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Upload HTML
+                    </button>
+                    <button class="tab-btn" data-tab="tab-code" role="tab">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                        HTML Code
+                    </button>
+                </div>
+
+                <form id="convert-form" class="convert-form">
+                    <!-- Tab 1: Local Path -->
+                    <div class="tab-pane active" id="tab-path">
+                        <label for="input-file-path" class="form-label">Absolute or relative file path on server</label>
+                        <div class="input-with-button">
+                            <input 
+                                type="text" 
+                                id="input-file-path" 
+                                name="file_path" 
+                                class="form-input" 
+                                placeholder="/path/to/page.html"
+                                value="{{ reference_file_path if reference_file_exists else '' }}"
+                            >
+                        </div>
+                        <p class="field-hint">Supports full companion assets folders (e.g. <code>invoice_files</code>) with styles & images.</p>
+                    </div>
+
+                    <!-- Tab 2: URL -->
+                    <div class="tab-pane" id="tab-url">
+                        <label for="input-url" class="form-label">Web Page URL (HTTP or HTTPS)</label>
+                        <input 
+                            type="url" 
+                            id="input-url" 
+                            name="url" 
+                            class="form-input" 
+                            placeholder="https://example.com/invoice/12345 or https://news.ycombinator.com"
+                        >
+                        <div class="url-auth-options" style="margin-top: 0.75rem;">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="opt-firefox-cookies" name="use_firefox_cookies" checked>
+                                <span><strong>Use Firefox Browser Session</strong> (Auto-import cookies for authenticated pages)</span>
+                            </label>
+                        </div>
+                        <p class="field-hint">Loads dynamic web pages, executes scripts, and securely applies your Firefox login session.</p>
+                    </div>
+
+                    <!-- Tab 3: Upload -->
+                    <div class="tab-pane" id="tab-upload">
+                        <label class="form-label">Upload local HTML document</label>
+                        <div class="file-dropzone" id="dropzone">
+                            <input type="file" id="input-file-upload" name="file" accept=".html,.htm" class="file-input-hidden">
+                            <div class="dropzone-content">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <span class="dropzone-text" id="dropzone-text">Click to choose or drag & drop .html file</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Direct HTML -->
+                    <div class="tab-pane" id="tab-code">
+                        <label for="input-html-code" class="form-label">Paste HTML snippet or template</label>
+                        <textarea 
+                            id="input-html-code" 
+                            name="html_content" 
+                            class="form-textarea" 
+                            rows="7" 
+                            placeholder="<!DOCTYPE html><html><body><h1>Hello World</h1></body></html>"
+                        ></textarea>
+                    </div>
+
+                    <!-- PDF Options Section -->
+                    <div class="options-container">
+                        <div class="options-header">
+                            <h3>PDF Layout & Rendering Options</h3>
+                            <div class="presets-group">
+                                <span class="presets-label">Presets:</span>
+                                <button type="button" class="preset-pill active" data-preset="receipt">Receipt (Single-Page)</button>
+                                <button type="button" class="preset-pill" data-preset="screen-a4">Screen A4</button>
+                                <button type="button" class="preset-pill" data-preset="print-a4">Print Clean</button>
+                            </div>
+                        </div>
+
+                        <div class="options-grid">
+                            <div class="form-group">
+                                <label for="opt-format" class="form-label">Page Format</label>
+                                <select id="opt-format" name="format" class="form-select">
+                                    <option value="A4" selected>A4 (210 × 297 mm)</option>
+                                    <option value="Letter">Letter (8.5 × 11 in)</option>
+                                    <option value="Legal">Legal</option>
+                                    <option value="A3">A3</option>
+                                    <option value="A5">A5</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="opt-media" class="form-label">Media Emulation</label>
+                                <select id="opt-media" name="media_type" class="form-select">
+                                    <option value="screen" selected>Screen (Browser Design & Colors)</option>
+                                    <option value="print">Print (@media print rules)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="opt-locale" class="form-label">Language / Locale</label>
+                                <select id="opt-locale" name="locale" class="form-select">
+                                    <option value="en-US" selected>English (en-US)</option>
+                                    <option value="ru-RU">Russian (ru-RU)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="opt-margins" class="form-label">Margins</label>
+                                <select id="opt-margins" name="margin" class="form-select">
+                                    <option value="0mm" selected>None (0 mm)</option>
+                                    <option value="5mm">Tight (5 mm)</option>
+                                    <option value="10mm">Normal (10 mm)</option>
+                                    <option value="20mm">Wide (20 mm)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="opt-scale" class="form-label">Zoom Scale: <span id="scale-val">100%</span></label>
+                                <input type="range" id="opt-scale" name="scale" min="0.5" max="1.5" step="0.05" value="1.0" class="form-range">
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="opt-single-page" name="single_page" checked>
+                                    <span><strong>Single-Page Fit</strong> (Continuous height, no page breaks)</span>
+                                </label>
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="opt-expand-collapsible" name="expand_collapsible" checked>
+                                    <span><strong>Expand Collapsible Menus</strong> (Unfold accordions, details & include hidden content)</span>
+                                </label>
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="opt-background" name="print_background" checked>
+                                    <span>Print background graphics and colors</span>
+                                </label>
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="opt-landscape" name="landscape">
+                                    <span>Landscape orientation</span>
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="opt-delay" class="form-label">JS Wait Delay (ms)</label>
+                                <input type="number" id="opt-delay" name="wait_delay" value="200" min="0" max="10000" step="100" class="form-input form-input-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-block" id="btn-convert">
+                            <span class="btn-text">Generate PDF</span>
+                            <div class="spinner hidden" id="spinner"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Panel: Live PDF Preview -->
+            <div class="panel preview-panel">
+                <div class="preview-header">
+                    <div class="preview-title">
+                        <h3>PDF Output Preview</h3>
+                        <div class="meta-tags" id="meta-tags" style="display: none;">
+                            <span class="badge badge-success" id="badge-time">0.0s</span>
+                            <span class="badge badge-info" id="badge-size">0 KB</span>
+                        </div>
+                    </div>
+                    <div class="preview-actions">
+                        <a id="btn-download" class="btn btn-secondary btn-sm" download="converted.pdf" style="display: none;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Download PDF
+                        </a>
+                        <a id="btn-external" class="btn btn-icon btn-sm" target="_blank" title="Open in new window" style="display: none;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="preview-body" id="preview-body">
+                    <!-- Placeholder state -->
+                    <div class="preview-placeholder" id="preview-placeholder">
+                        <div class="placeholder-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                        </div>
+                        <h4>No PDF generated yet</h4>
+                        <p>Configure your source on the left and click "Generate PDF" or click "Use Reference Receipt" above.</p>
+                    </div>
+
+                    <!-- PDF Viewer Frame -->
+                    <iframe id="pdf-viewer" class="pdf-viewer hidden" title="PDF Preview"></iframe>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
