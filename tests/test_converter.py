@@ -12,13 +12,14 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from playwright.sync_api import sync_playwright
 
 from html_to_pdf.config import PDFOptions
 from html_to_pdf.converter import HTMLToPDFConverter, convert_file, convert_html_string, convert_url
 from html_to_pdf.cookies import extract_firefox_cookies, extract_firefox_localstorage, find_firefox_profiles
-from html_to_pdf.web.app import app
+from html_to_pdf.web.app import DEFAULT_SAMPLE_PATH, app
 
-SAMPLE_RECEIPT_PATH = Path(__file__).resolve().parent.parent / "examples" / "sample_receipt.html"
+SAMPLE_RECEIPT_PATH = DEFAULT_SAMPLE_PATH
 
 
 @pytest.fixture(scope="module")
@@ -192,22 +193,48 @@ def test_expand_collapsible_details_and_aria(converter):
     assert "Hidden Content In Details Tag" in extracted
 
 
-def test_expand_collapsible_sample_receipt(converter):
-    """Test that expanding collapsibles on the sample receipt includes recipient and sender details."""
+@pytest.mark.parametrize("expand_collapsible", [False, True])
+def test_expand_collapsible_sample_receipt(converter, expand_collapsible):
+    """Only expanded receipts should include the initially hidden account details."""
     assert SAMPLE_RECEIPT_PATH.exists()
 
-    opts = PDFOptions(expand_collapsible=True, single_page=True)
+    opts = PDFOptions(expand_collapsible=expand_collapsible, single_page=True)
     pdf_bytes = converter.convert_file(str(SAMPLE_RECEIPT_PATH), options=opts)
 
     proc = subprocess.run(["pdftotext", "-", "-"], input=pdf_bytes, capture_output=True)
     extracted = proc.stdout.decode("utf-8", errors="ignore")
 
-    # Both collapsible accordion sections must be expanded and their inner fields included
     assert "Recipient's details" in extracted
-    assert "Alex Morgan" in extracted
-    assert "Germany" in extracted
     assert "Sender's details" in extracted
-    assert "Jordan Taylor" in extracted
+    for detail in ("Alex Morgan", "Germany", "Jordan Taylor", "United States"):
+        assert (detail in extracted) is expand_collapsible
+
+
+def test_sample_receipt_collapsibles_are_interactive(converter):
+    """The bundled receipt supports mouse and keyboard expansion without converter scripts."""
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(
+            executable_path=converter.chrome_path,
+            args=converter._get_launch_args(),
+        )
+        try:
+            page = browser.new_page()
+            page.goto(SAMPLE_RECEIPT_PATH.as_uri())
+            sections = page.locator("details.collapsible-section")
+            assert sections.count() == 2
+            for section in sections.all():
+                content = section.locator(".accordion-content")
+                summary = section.locator("summary")
+                assert not content.is_visible()
+                summary.click()
+                assert content.is_visible()
+                summary.click()
+                assert not content.is_visible()
+                summary.focus()
+                summary.press("Enter")
+                assert content.is_visible()
+        finally:
+            browser.close()
 
 
 def test_locale_rendering_in_html(converter):

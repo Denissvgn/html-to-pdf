@@ -48,7 +48,6 @@ source .venv/bin/activate
 ### 3. Install packages & Playwright browser
 ```bash
 pip install -r requirements.txt
-pip install -e .
 playwright install chromium
 ```
 
@@ -74,10 +73,10 @@ Interactive OpenAPI docs are available at [http://127.0.0.1:8000/docs](http://12
 #### Convert Local HTML File
 ```bash
 # Standard A4 multi-page
-html-to-pdf examples/sample_receipt.html -o receipt.pdf
+html-to-pdf html_to_pdf/examples/sample_receipt.html -o receipt.pdf
 
 # Single continuous page (ideal for receipt or invoice layout)
-html-to-pdf examples/sample_receipt.html -o receipt_single.pdf --single-page
+html-to-pdf html_to_pdf/examples/sample_receipt.html -o receipt_single.pdf --single-page
 ```
 
 #### Convert Authenticated Web Page
@@ -99,10 +98,10 @@ html-to-pdf "https://news.ycombinator.com" -o hackernews.pdf --format A4 --media
 By default, `--expand-collapsible` is enabled:
 ```bash
 # Expands all collapsible accordions (like recipient & sender info):
-html-to-pdf examples/sample_receipt.html -o receipt_expanded.pdf --single-page
+html-to-pdf html_to_pdf/examples/sample_receipt.html -o receipt_expanded.pdf --single-page
 
 # Or keep sections in their original collapsed state:
-html-to-pdf examples/sample_receipt.html -o receipt_collapsed.pdf --no-expand
+html-to-pdf html_to_pdf/examples/sample_receipt.html -o receipt_collapsed.pdf --no-expand
 ```
 
 #### Language / Locale Selection
@@ -167,7 +166,7 @@ ls -1v invoice_*.pdf | pdf-merge -o combined_invoices.pdf -
 from html_to_pdf import HTMLToPDFConverter, PDFOptions, convert_file, convert_url, merge_pdfs
 
 # 1. Convert local file
-convert_file("examples/sample_receipt.html", output_path="receipt.pdf")
+convert_file("html_to_pdf/examples/sample_receipt.html", output_path="receipt.pdf")
 
 # 2. Convert URL with custom options
 options = PDFOptions(
@@ -199,7 +198,7 @@ merge_pdfs(
 - `POST /api/convert/path`: Convert local file path on server.
   ```json
   {
-    "file_path": "examples/sample_receipt.html",
+    "file_path": "html_to_pdf/examples/sample_receipt.html",
     "format": "A4",
     "single_page": true,
     "media_type": "screen"
