@@ -94,6 +94,7 @@
         }
         .accordion-header {
             display: flex;
+            list-style: none;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
@@ -111,6 +112,9 @@
             width: 20px;
             height: 20px;
             transition: transform 0.2s ease;
+        }
+        .collapsible-section[open] .chevron-icon {
+            transform: rotate(180deg);
         }
         .footer-action {
             margin-top: 28px;
@@ -160,13 +164,13 @@
         </div>
 
         <!-- Collapsible Section 1: Recipient Details -->
-        <div class="collapsible-section">
-            <div class="accordion-header cursor-pointer" aria-expanded="false" role="button">
+        <details class="collapsible-section">
+            <summary class="accordion-header">
                 <span>Recipient's details</span>
-                <svg class="chevron-icon scale-y-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
-            </div>
+            </summary>
             <div class="accordion-content">
                 <div class="meta-row">
                     <span class="meta-label">Receiving Country</span>
@@ -181,16 +185,16 @@
                     <span class="meta-value">DE89 3704 0044 0532 0130 00</span>
                 </div>
             </div>
-        </div>
+        </details>
 
         <!-- Collapsible Section 2: Sender Details -->
-        <div class="collapsible-section">
-            <div class="accordion-header cursor-pointer" aria-expanded="false" role="button">
+        <details class="collapsible-section">
+            <summary class="accordion-header">
                 <span>Sender's details</span>
-                <svg class="chevron-icon scale-y-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
-            </div>
+            </summary>
             <div class="accordion-content">
                 <div class="meta-row">
                     <span class="meta-label">Sending Country</span>
@@ -205,7 +209,7 @@
                     <span class="meta-value">Checking ••8842</span>
                 </div>
             </div>
-        </div>
+        </details>
 
         <div class="footer-action">
             <button class="btn-action">Download Tax Invoice</button>

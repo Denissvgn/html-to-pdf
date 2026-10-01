@@ -17,8 +17,8 @@ from html_to_pdf.web.app import DEFAULT_SAMPLE_PATH, app
 
 class InstalledPackageTests(unittest.TestCase):
     def test_distribution_metadata_and_import_location(self):
-        checkout = Path(__file__).resolve().parents[1]
-        self.assertNotIn(checkout, Path(html_to_pdf.__file__).resolve().parents)
+        source_package = (Path(__file__).resolve().parents[1] / "html_to_pdf").resolve()
+        self.assertNotIn(source_package, Path(html_to_pdf.__file__).resolve().parents)
         package_metadata = metadata("html-to-pdf")
         self.assertEqual(package_metadata["Author"], "Denis Sivagin")
         self.assertEqual(package_metadata["License-Expression"], "MIT")
@@ -44,15 +44,23 @@ class InstalledPackageTests(unittest.TestCase):
             health = client.get("/api/health")
             self.assertEqual(health.status_code, 200)
             self.assertTrue(health.json()["reference_file_exists"])
-            response = client.post(
-                "/api/convert/path",
-                json={"file_path": str(DEFAULT_SAMPLE_PATH), "single_page": True},
-            )
-        self.assertEqual(response.status_code, 200, response.text[:500])
-        self.assertEqual(response.headers["content-type"], "application/pdf")
-        reader = PdfReader(io.BytesIO(response.content))
-        self.assertEqual(len(reader.pages), 1)
-        self.assertIn("Alex Morgan", reader.pages[0].extract_text())
+            for expand_collapsible in (False, True):
+                with self.subTest(expand_collapsible=expand_collapsible):
+                    response = client.post(
+                        "/api/convert/path",
+                        json={
+                            "file_path": str(DEFAULT_SAMPLE_PATH),
+                            "single_page": True,
+                            "expand_collapsible": expand_collapsible,
+                        },
+                    )
+                    self.assertEqual(response.status_code, 200, response.text[:500])
+                    self.assertEqual(response.headers["content-type"], "application/pdf")
+                    reader = PdfReader(io.BytesIO(response.content))
+                    self.assertEqual(len(reader.pages), 1)
+                    text = reader.pages[0].extract_text()
+                    for detail in ("Alex Morgan", "Jordan Taylor"):
+                        self.assertEqual(detail in text, expand_collapsible)
 
     def test_installed_cli_entry_points(self):
         with tempfile.TemporaryDirectory() as directory:
